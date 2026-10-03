@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Resource Hub | GDG AITR Evaluation</title>
+  <meta name="description" content="A curated directory of web dev, app dev, AI/ML, and developer tools built for GDG AITR evaluation.">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Google Fonts for clean typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lightweight Three.js for 3D Hero Element (CDN with JS fallback) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- HEADER & HERO SECTION -->
+  <header class="header">
+    <!-- Ambient Tech Grid & Particles Background -->
+    <div class="hero-bg-grid" aria-hidden="true"></div>
+    <div class="hero-particles" aria-hidden="true">
+      <span class="particle p1"></span>
+      <span class="particle p2"></span>
+      <span class="particle p3"></span>
+      <span class="particle p4"></span>
+    </div>
+
+    <div class="container header-container">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <span class="dot dot-blue"></span>
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">Developer Resource Hub</h1>
+          <p class="brand-subtitle">Curated tools, frameworks & documentation for developers</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Theme Toggle Button -->
+        <button id="themeToggle" class="btn btn-icon" aria-label="Toggle dark/light theme" title="Toggle Theme">
+          <span id="themeIcon" class="theme-icon" aria-hidden="true">🌙</span>
+          <span id="themeLabel" class="sr-only">Switch to Dark Mode</span>
+        </button>
+
+        <!-- Add Resource Button -->
+        <button id="openModalBtn" class="btn btn-primary">
+          <svg class="btn-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Resource
+        </button>
+      </div>
+
+      <!-- 3D Hero Wireframe Canvas (Decorative Only, Layered Behind Header Actions) -->
+      <div class="hero-3d-wrapper" aria-hidden="true">
+        <canvas id="hero3DCanvas"></canvas>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- CONTROLS: SEARCH & CATEGORY FILTERS -->
+      <section class="controls-section" aria-label="Search and Filter Controls">
+        
+        <!-- Search Bar -->
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="search" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Search by title, description, category, or tags..." 
+            aria-label="Search resources"
+          >
+          <button id="clearSearchBtn" class="clear-search-btn hidden" aria-label="Clear search input">✕</button>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="category-filters" role="tablist" aria-label="Resource categories">
+          <button class="filter-btn active" data-category="All" role="tab" aria-selected="true">
+            All
+          </button>
+          <button class="filter-btn" data-category="Web Development" role="tab" aria-selected="false">
+            Web Development
+          </button>
+          <button class="filter-btn" data-category="App Development" role="tab" aria-selected="false">
+            App Development
+          </button>
+          <button class="filter-btn" data-category="AI/ML" role="tab" aria-selected="false">
+            AI/ML
+          </button>
+          <button class="filter-btn" data-category="Tools" role="tab" aria-selected="false">
+            Tools
+          </button>
+        </div>
+
+        <!-- Meta Bar: Counter & Quick Info -->
+        <div class="meta-bar">
+          <p id="resourceCount" class="resource-count" aria-live="polite">Showing 0 resources</p>
+          <button id="resetFiltersBtn" class="btn-text hidden">Reset Filters</button>
+        </div>
+
+      </section>
+
+      <!-- RESOURCE CARDS GRID -->
+      <section class="dashboard-section" aria-label="Developer Resources Directory">
+        
+        <!-- Cards Container -->
+        <div id="resourceGrid" class="resource-grid">
+          <!-- Resource cards will be rendered dynamically via JavaScript -->
+        </div>
+
+        <!-- Empty State (Shown when no search/filter match) -->
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-icon" aria-hidden="true">🔍</div>
+          <h2 class="empty-title">No resources found</h2>
+          <p class="empty-text">We couldn't find any resources matching your search or selected filter.</p>
+          <button id="emptyStateResetBtn" class="btn btn-secondary">Clear Search & Filters</button>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ADD RESOURCE MODAL -->
+  <div id="resourceModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title">Add New Resource</h2>
+        <button id="closeModalBtn" class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="addResourceForm" class="modal-form" novalidate>
+        <!-- Form Alert / Error Message -->
+        <div id="formErrorMessage" class="form-error hidden" role="alert"></div>
+
+        <!-- Title -->
+        <div class="form-group">
+          <label for="resourceTitle" class="form-label">Resource Title <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="resourceTitle" 
+            class="form-input" 
+            placeholder="e.g. MDN Web Docs" 
+            required
+          >
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label for="resourceCategory" class="form-label">Category <span class="required">*</span></label>
+          <select id="resourceCategory" class="form-select" required>
+            <option value="" disabled selected>Select a category</option>
+            <option value="Web Development">Web Development</option>
+            <option value="App Development">App Development</option>
+            <option value="AI/ML">AI/ML</option>
+            <option value="Tools">Tools</option>
+          </select>
+        </div>
+
+        <!-- Website URL -->
+        <div class="form-group">
+          <label for="resourceUrl" class="form-label">Resource URL <span class="required">*</span></label>
+          <input 
+            type="url" 
+            id="resourceUrl" 
+            class="form-input" 
+            placeholder="https://example.com" 
+            required
+          >
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="resourceDescription" class="form-label">Description <span class="required">*</span></label>
+          <textarea 
+            id="resourceDescription" 
+            class="form-textarea" 
+            rows="3" 
+            placeholder="Brief description of what this resource offers..." 
+            required
+          ></textarea>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-group">
+          <label for="resourceTags" class="form-label">Tags <span class="optional">(optional, comma-separated)</span></label>
+          <input 
+            type="text" 
+            id="resourceTags" 
+            class="form-input" 
+            placeholder="e.g. html, css, documentation"
+          >
+        </div>
+
+        <!-- Form Buttons -->
+        <div class="modal-actions">
+          <button type="button" id="cancelModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Resource</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-left">
+        <p class="footer-title">Developer Resource Hub</p>
+        <p class="footer-sub">Simple, fast, and accessible developer directory.</p>
+      </div>
+      <div class="footer-right">
+        <span class="badge badge-gdg">Built for GDG AITR evaluation</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT -->
+  <script src="script.js"></script>
+</body>
+</html>
